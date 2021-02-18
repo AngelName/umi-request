@@ -7,6 +7,7 @@ export interface ResponseError<D = any> extends Error {
     url: string;
     options: RequestOptionsInit;
   };
+  type: string;
 }
 /**
  * 增加的参数
@@ -42,6 +43,7 @@ export interface RequestOptionsInit extends RequestInit {
   getResponse?: boolean;
   validateCache?: (url: string, options: RequestOptionsInit) => boolean;
   __umiRequestCoreType__?: string;
+  [key: string]: any;
 }
 
 export interface RequestOptionsWithoutResponse extends RequestOptionsInit {
@@ -76,7 +78,7 @@ export interface Context {
 export type ResponseInterceptor = (response: Response, options: RequestOptionsInit) => Response | Promise<Response>;
 
 export type OnionMiddleware = (ctx: Context, next: () => void) => void;
-export type OnionOptions = { global?: boolean; core?: boolean };
+export type OnionOptions = { global?: boolean; core?: boolean; defaultInstance?: boolean };
 
 export interface RequestMethod<R = false> {
   <T = any>(url: string, options: RequestOptionsWithResponse): Promise<RequestResponse<T>>;
@@ -104,6 +106,12 @@ export interface RequestMethod<R = false> {
   CancelToken: CancelTokenStatic;
   isCancel(value: any): boolean;
   extendOptions: (options: RequestOptionsInit) => void;
+  middlewares: {
+    instance: OnionMiddleware[];
+    defaultInstance: OnionMiddleware[];
+    global: OnionMiddleware[];
+    core: OnionMiddleware[];
+  };
 }
 
 export interface ExtendOnlyOptions {
@@ -153,6 +161,10 @@ export interface CancelTokenSource {
 }
 
 declare var request: RequestMethod;
-declare var fetch: RequestMethod;
+
+export declare var fetch: RequestMethod;
+
+export declare var AbortController: { prototype: AbortController; new (): AbortController };
+export declare var AbortSignal: { prototype: AbortSignal; new (): AbortSignal };
 
 export default request;
